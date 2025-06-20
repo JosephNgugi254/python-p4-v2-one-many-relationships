@@ -18,21 +18,30 @@ class Employee(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String)
     hire_date = db.Column(db.Date)
+    # One-to-many relationship with Review
+    reviews = db.relationship('Review', backref='employee')
+    # One-to-one relationship with Onboarding
+    onboarding = db.Relationship('Onboarding',uselist=False, back_populates='employee')
 
     def __repr__(self):
         return f"<Employee {self.id}, {self.name}, {self.hire_date}>"
 
 
 class Onboarding(db.Model):
-    __tablename__ = "onboardings"
+    __tablename__ = 'onboardings'
 
     id = db.Column(db.Integer, primary_key=True)
     orientation = db.Column(db.DateTime)
     forms_complete = db.Column(db.Boolean, default=False)
 
-    def __repr__(self):
-        return f"<Onboarding {self.id}, {self.orientation}, {self.forms_complete}>"
+    # Foreign key to store the employee id
+    employee_id = db.Column(db.Integer, db.ForeignKey('employees.id'))
 
+    # Relationship mapping onboarding to related employee
+    employee = db.relationship('Employee', back_populates='onboarding')
+
+    def __repr__(self):
+        return f'<Onboarding {self.id}, {self.orientation}, {self.forms_complete}>'
 
 class Review(db.Model):
     __tablename__ = "reviews"
@@ -40,6 +49,11 @@ class Review(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     year = db.Column(db.Integer)
     summary = db.Column(db.String)
+    #foreign key
+    employee_id=db.Column(db.Integer, db.ForeignKey('employees.id'))
+
+
+
 
     def __repr__(self):
         return f"<Review {self.id}, {self.year}, {self.summary}>"
